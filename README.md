@@ -1,6 +1,6 @@
 # 02_lab_bank_accounts
 
-* Firs Name:
-* Last Name:
-* Period:
-* Github username:
+* Firs Name: Andrei
+* Last Name: Karlin
+* Period: 3
+* Github username: fredthefish
