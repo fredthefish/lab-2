@@ -59,4 +59,23 @@ class SavingsAccount extends BankAccount {
   public int getWithdrawCount() {
     return withdrawCount;
   }
+  public void withdraw(double amount) throws Exception {
+    if (withdrawCount == 6) throw new Exception();
+    super(amount);
+    withdrawCoun++;
+  }
+}
+
+class SavingsAccountKid extends SavingsAccount [
+  private String parentName;
+  public SavingsAccountKid(String name, double initialDeposit, double interestRate, String parentName)
+  throws Exception {
+    super(name, initialDeposit, interestRate);
+    this.parentName = parentName;
+  }
+  
+  public int withdraw(double amount, String parentName) throws Exception {
+    if (!parentName.equals(this.parentName)) throw new Exception();
+    super(amount);
+  }
 }
