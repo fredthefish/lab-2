@@ -6,7 +6,7 @@ interface BankAccountInterface {
   void transfer(double amount, BankAccount destination) throws Exception;
 }
 
-abstract class BankAccount {
+abstract class BankAccount implements BankAccountInterface {
   private String name;
   private double balance;
   
@@ -29,6 +29,8 @@ abstract class BankAccount {
     withdraw(amount);
     destination.balance += amount;
   }
+  public double getBalance() { return balance; }
+  public String getName() { return name; }
 }
 
 class CheckingAccount extends BankAccount {
@@ -43,9 +45,9 @@ class CheckingAccount extends BankAccount {
 class SavingsAccount extends BankAccount {
   private String name;
   private double balance;
-  
   private double interestRate;
   private int withdrawCount;
+  
   public SavingsAccount(String name, double initialDeposit, double interestRate) 
   throws Exception {
     super(name, initialDeposit);
@@ -67,7 +69,12 @@ class SavingsAccount extends BankAccount {
 }
 
 class SavingsAccountKid extends SavingsAccount [
+  private String name;
+  private double balance;
+  private double interestRate;
+  private int withdrawCount;
   private String parentName;
+  
   public SavingsAccountKid(String name, double initialDeposit, double interestRate, String parentName)
   throws Exception {
     super(name, initialDeposit, interestRate);
