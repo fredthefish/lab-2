@@ -1,3 +1,13 @@
+import java.lang.IllegalArgumentException;
+
+public class Driver {
+    public static void main(String[] args) {
+        BankAccount bank;
+        bank = new CheckingAccount("Joe", 1000);
+        
+    }
+}
+
 interface BankAccountInterface {
   double getBalance();
   String getName();
@@ -11,18 +21,18 @@ abstract class BankAccount implements BankAccountInterface {
   private double balance;
   
   public BankAccount(String name, double initialDeposit) throws Exception {
-    if (name.length() <= 2) throw new Exception();
+    if (name.length() <= 2) throw new IllegalArgumentException();
     this.name = name;
-    if (balance <= 0) throw new Exception();
+    if (balance <= 0) throw new IllegalArgumentException();
     balance = initialDeposit;
   }
   public void deposit(double amount) throws Exception {
-    if (amount <= 0) throw new Exception();
+    if (amount <= 0) throw new IllegalArgumentException();
     balance += amount;
   }
   public void withdraw(double amount) throws Exception {
-    if (amount <= 0) throw new Exception();
-    if (amount > balance) throw new Exception();
+    if (amount <= 0) throw new IllegalArgumentException();
+    if (amount > balance) throw new IllegalArgumentException();
     balance -= amount;
   }
   public void transfer(double amount, BankAccount destination) throws Exception {
@@ -51,7 +61,7 @@ class SavingsAccount extends BankAccount {
   public SavingsAccount(String name, double initialDeposit, double interestRate) 
   throws Exception {
     super(name, initialDeposit);
-    if (interestRate < 0) throw new Exception();
+    if (interestRate < 0) throw new IllegalArgumentException();
     this.interestRate = interestRate;
     withdrawCount = 0;
   }
@@ -63,12 +73,12 @@ class SavingsAccount extends BankAccount {
   }
   public void withdraw(double amount) throws Exception {
     if (withdrawCount == 6) throw new Exception();
-    super(amount);
-    withdrawCoun++;
+    super.withdraw(amount);
+    withdrawCount++;
   }
 }
 
-class SavingsAccountKid extends SavingsAccount [
+class SavingsAccountKid extends SavingsAccount {
   private String name;
   private double balance;
   private double interestRate;
@@ -81,8 +91,8 @@ class SavingsAccountKid extends SavingsAccount [
     this.parentName = parentName;
   }
   
-  public int withdraw(double amount, String parentName) throws Exception {
+  public void withdraw(double amount, String parentName) throws Exception {
     if (!parentName.equals(this.parentName)) throw new Exception();
-    super(amount);
+    super.withdraw(amount);
   }
 }
