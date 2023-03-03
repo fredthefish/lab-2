@@ -1,12 +1,12 @@
 import java.lang.IllegalArgumentException;
 import java.lang.IllegalAccessException;
 
-public class Driver {
+class Driver {
     public static void main(String[] args) {
         // BankAccount test = new BankAccount("Fred", 50); // BankAccount is abstract; cannot be instantiated
         BankAccount bank;
-        BankAccount savings;
-        BankAccount kid;
+        SavingsAccount savings;
+        SavingsAccountKid kid;
         bank = new CheckingAccount("Joe", 1000);
         savings = new SavingsAccount("Bob", 5000, 0.05);
         kid = new SavingsAccountKid("Sarah", 300, 0.04, "Bob");
@@ -14,15 +14,39 @@ public class Driver {
         "Bob's checking account with $5000 and a 5% interest rate, " +
         "and Sarah (daughter of Bob)'s child saving account with $300 and a 4% interest rate.");
         
-        System.out.println("Joe's balance: " + bank.getBalance());
+        System.out.println("Joe's balance: $" + bank.getBalance());
         System.out.println("Joe's name: " + bank.getName());
         bank.deposit(100);
-        System.out.println("Joe deposited $100. His new balance: " + bank.getBalance());
+        System.out.println("Joe deposited $100. His new balance: $" + bank.getBalance());
         try { bank.deposit(-100); }
         catch(IllegalArgumentException e) { System.out.println("Joe cannot deposit negative money."); }
         try { bank.deposit(0); }
         catch(IllegalArgumentException e) { System.out.println("Joe cannot deposit no money."); }
-
+        try { bank.withdraw(-100); }
+        catch(IllegalArgumentException e) { System.out.println("Joe cannot withdraw negative money."); }
+        try { bank.withdraw(bank.getBalance() + 1); }
+        catch(IllegalArgumentException e) { System.out.println("Joe cannot withdraw more than he has."); }
+        bank.withdraw(100);
+        System.out.println("Joe withdrew $100. His new balance: " + bank.getBalance());
+        savings.transfer(100, bank);
+        System.out.println("Bob sent Joe $100. Joe's new balance: $" + bank.getBalance()
+         + ". Bob's new balance :$" + savings.getBalance());
+        try { bank.transfer(bank.getBalance() + 1, kid); }
+        catch(IllegalArgumentException e) { System.out.println("Joe cannot transfer more than he has."); }
+        for(int i = 0; i < 7; i++) {
+          try { savings.withdraw(i); System.out.println("Bob withdrew $"+i+". His new balance: $" + savings.getBalance()
+          + ". Withdraws left: " + savings.getWithdrawCount()); }
+          catch(IllegalStateException e) { System.out.println("Bob has used up all of his withdraws."); }
+          catch(IllegalArgumentException e) { System.out.println("Bob cannot withdraw more than he has or negative money."); }
+        }
+        savings.addInterest();
+        System.out.println("Bob collected interest. His new balance: $" + savings.getBalance());
+        try { kid.withdraw(100, "Sarah"); }
+        catch(IllegalAccessException e) { System.out.println("Sarah tried to withdraw, but is a child and cannot."); }
+        try { kid.transfer(100, savings, "Bob"); System.out.println("Bob took $100 from Sarah's account. " +
+        "His balance: $" + savings.getBalance() + ". Her balance: $" + kid.getBalance() + "."); }
+        catch(IllegalAccessException e) { System.out.println("Bob does not have access to Sarah's account."); }
+        
     }
 }
 
@@ -89,7 +113,7 @@ class SavingsAccount extends BankAccount {
     return withdrawCount;
   }
   public void withdraw(double amount) {
-    if (withdrawCount == 6) { throw new IllegalAccessException(); }
+    if (withdrawCount == 6) throw new IllegalStateException();
     super.withdraw(amount);
     withdrawCount++;
   }
@@ -106,8 +130,11 @@ class SavingsAccountKid extends SavingsAccount {
     super(name, initialDeposit, interestRate);
     this.parentName = parentName;
   }
-  
-  public void withdraw(double amount, String parentName) {
+  public void transfer(double amount, BankAccount destination, String parentName) throws IllegalAccessException {
+    if (!parentName.equals(this.parentName)) throw new IllegalAccessException();
+    super.transfer(amount, destination);
+  }
+  public void withdraw(double amount, String parentName) throws IllegalAccessException {
     if (!parentName.equals(this.parentName)) throw new IllegalAccessException();
     super.withdraw(amount);
   }
